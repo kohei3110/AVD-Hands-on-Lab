@@ -1,0 +1,77 @@
+{
+    "$schema": "https://schema.management.azure.com/schemas/2019-04-01/deploymentTemplate.json#",
+    "contentVersion": "1.0.0.0",
+    "parameters": {
+        "virtualNetworkName": {
+            "type": "string",
+            "defaultValue": "vnet-handson-lab-westus2-001",
+            "metadata": {
+                "description": "仮想ネットワーク名"
+            }
+        },
+        "virtuanNetworkAddressSpace": {
+            "type": "string",
+            "defaultValue": "172.16.0.0/20",
+            "metadata": {
+                "description": "仮想ネットワークのアドレス範囲"
+            }
+        },
+        "subnetName": {
+            "type": "string",
+            "defaultValue": "snet-handson-lab-westus2-001",
+            "metadata": {
+                "description": "セッションホストを展開するサブネット名"
+            }
+        },
+        "subnetAddressSpace": {
+            "type": "string",
+            "defaultValue": "172.16.0.0/24",
+            "metadata": {
+                "description": "サブネットのアドレス範囲"
+            }
+        }                        
+    },
+    "variables": {
+        "networkSecurityGroupName": "nsg-handson-lab-westus2-001"
+    },
+    "resources": [
+        {
+            "type": "Microsoft.Network/virtualNetworks",
+            "apiVersion": "2020-11-01",
+            "name": "[parameters('virtualNetworkName')]",
+            "location": "[resourceGroup().location]",
+            "dependsOn": [
+                "[resourceId('Microsoft.Network/networkSecurityGroups', variables('networkSecurityGroupName'))]"
+            ],
+            "properties": {
+                "addressSpace": {
+                    "addressPrefixes": [
+                        "[parameters('virtuanNetworkAddressSpace')]"
+                    ]
+                },
+                "subnets": [
+                    {
+                        "name": "[parameters('subnetName')]",
+                        "properties": {
+                            "addressPrefix": "[parameters('subnetAddressSpace')]",
+                            "networkSecurityGroup": {
+                                "id": "[resourceId('Microsoft.Network/networkSecurityGroups', variables('networkSecurityGroupName'))]"
+                            },
+                            "privateEndpointNetworkPolicies": "Disabled",
+                            "privateLinkServiceNetworkPolicies": "Disabled"
+                        }
+                    }
+                ]
+            }
+        },
+        {
+            "type": "Microsoft.Network/networkSecurityGroups",
+            "apiVersion": "2020-11-01",
+            "name": "[variables('networkSecurityGroupName')]",
+            "location": "[resourceGroup().location]",
+            "properties": {
+                "securityRules": []
+            }
+        }        
+    ]
+}
