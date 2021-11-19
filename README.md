@@ -6,4 +6,4 @@ Azure Virtual Desktop を実際に構築する
 
 - AVD ARM Template 作成
 - ハンズオン手順作成
-- ハンズオン実施
+- ハンズオン練習
